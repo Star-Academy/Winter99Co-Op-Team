@@ -7,6 +7,6 @@
   public BranchAdress: string;
   public BranchName: string;
   public OwnerName: string;
-  public OwnerFamilyName:string;
+  public OwnerFamilyName: string;
   public OwnerID: string;
 }
