@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as Ogma from '../assets/ogma.min.js';
 import { HttpClient } from '@angular/common/http';
+import {AccountsService} from "./app/services/accounts.service";
 
 @Component({
   selector: 'app-root',
@@ -20,17 +21,12 @@ export class AppComponent implements OnInit{
   private height: number;
 
 
-  constructor(private http:HttpClient) {
+  constructor(private service: AccountsService) {
   }
 
-  ngOnInit(): void {
-
-    this.initOgma();
-
-  }
-
-  private fetchUser(): string{
-    this.http.get("https://localhost:5001/", {body:{}})
+  async ngOnInit(): Promise<void> {
+    const account = await this.service.getAccount();
+    console.log(account);
   }
 
   private initOgma(): void {
