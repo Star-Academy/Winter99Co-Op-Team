@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as Ogma from '../assets/ogma.min.js';
 import { HttpClient } from '@angular/common/http';
 import {AccountsService} from "./app/services/accounts.service";
+import {Account} from "./models/Account";
 
 @Component({
   selector: 'app-root',
@@ -20,16 +21,43 @@ export class AppComponent implements OnInit{
   private width: number;
   private height: number;
 
+  private account1: Account = {
+    AccountType: "سپرده",
+    BranchAdress: "تهران-خيابان شهيد مدنی-نبش خيابان اميرشرفی",
+    BranchName: "امیر شرفی",
+    BranchTelephone: "212154454",
+    CardID: "6037699000000020",
+    OwnerFamilyName: "سلامی",
+    OwnerID: "122121",
+    OwnerName: "سلام",
+    Sheba: "IR033880987114000000028",
+    AccountID: "4000000028"
+  };
+  private account2: Account = {
+  AccountType: "سپرده",
+  BranchAdress: "تهران-خيابان شهيد مدنی-نبش خيابان امیر غربی",
+  BranchName: "امیر غربی",
+  BranchTelephone: "9999999",
+  CardID: "8888888",
+  OwnerFamilyName: "خدافظی",
+  OwnerID: "111111",
+  OwnerName: "سلام",
+  Sheba: "IR03388098788888888",
+  AccountID: "78787878787"
+  };
+
 
   constructor(private service: AccountsService) {
   }
 
-  async ngOnInit(): Promise<void> {
-    const account = await this.service.getAccount();
-    console.log(account);
+  ngOnInit(): void {
+    // const account = await this.service.getAccount();
+    // console.log(account);
+    this.initOgma();
   }
 
   private initOgma(): void {
+
     this.ogma = new Ogma({
       container: 'graph-container',
     });
@@ -44,14 +72,17 @@ export class AppComponent implements OnInit{
 
     // creating nodes
     this.nodes = [];
-    for (let i = 0; i < this.nodesCount; i++) {
-      const randomX = Math.random() * this.width - this.width / 2;
-      const randomY = Math.random() * this.height - this.height / 2;
 
-      this.nodes.push(
-        { id: 'n' + i, data: { name: 'Node ' + i }, attributes: { x: randomX, y: randomY, radius: 20 } }
-      ); // data is a custom dictionary for containing data
-    }
+    this.nodes.push(
+      { id: 'n' + 1, data: { name: this.account1.AccountID + 1 }, attributes: { x: 20, y: 20, radius: 20, color:'red'  ,text: {content:"node1", color: '', style: 'bold' }}});
+
+    this.nodes.push(
+      { id: 'n' + 3, data: { name: this.account1.AccountID + 2 }, attributes: { x: 30, y: 40, radius: 20 }});
+
+
+    this.nodes.push(
+      { id: 'n' + 2, data: { name: this.account2.AccountID + 1 }, attributes: { x: 50, y: 50, radius: 20 }});
+
 
     this.ogma.addNodes(this.nodes);
     // adding created nodes to ogma
@@ -59,20 +90,28 @@ export class AppComponent implements OnInit{
 
     // creating links
     this.links = [];
-    for (let i = 0; i < this.linksCount; i++) {
 
-      const sourceId = 'n' + (Math.floor(Math.random() * this.nodesCount));
-      const targetId = 'n' + (Math.floor(Math.random() * this.nodesCount));
+      const sourceId = 'n' + 1;
+      const targetId = 'n' + 2;
 
-      if (sourceId === targetId && this.nodesCount !== 1) {
-        i--;
-        continue;
+    this.ogma.styles.addEdgeRule({
+      text: {
+        maxLineLength: 140, // truncate
+        size: 12,
+        color: 'black',
+        minVisibleSize: 2,
+        content: e => 'Edge ' + e.getId()
       }
+    });
 
-      this.links.push(
-        { id: 'e' + i, source: sourceId, target: targetId, data: { name: 'parent' } }
+
+    this.links.push(
+        { id: 'e' + 1, source: sourceId, target: targetId, data: { name: 'parent' , color:'red'}}
       ); // data is a custom dictionary for containing data
-    }
+
+    this.links.push(
+      { id: 'e' + 2, source: 'n' +3, target: 'n' +1, data: { name: 'parent' } }
+    ); // data is a custom dictionary for containing data
 
     this.ogma.addEdges(this.links);
     // adding created links to ogma
