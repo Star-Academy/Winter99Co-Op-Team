@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as Ogma from '../assets/ogma.min.js';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -19,13 +20,17 @@ export class AppComponent implements OnInit{
   private height: number;
 
 
-  constructor() {
+  constructor(private http:HttpClient) {
   }
 
   ngOnInit(): void {
 
     this.initOgma();
 
+  }
+
+  private fetchUser(): string{
+    this.http.get("https://localhost:5001/", {body:{}})
   }
 
   private initOgma(): void {
