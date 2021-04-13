@@ -156,7 +156,6 @@ export class AppComponent implements OnInit {
       target: transaction.then(r => r.destiantionAccount),
       data: {name: 'parent', color: 'red'}
     }
-
     return link;
   }
 

@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
-<link rel="stylesheet" href= "search-bar.component.scss">
+<link rel="stylesheet" href="search-bar.component.scss">
 <body dir="rtl">
-  <form>
-    <<label>
-      <input [(ngModel)]="value" (keyup)="onClickGet($event)"  type="text" id="id" autocomplete="off" name="text" class="search" placeholder="شماره حساب را وارد کنید...">
-    </label>
-    <input type="submit" name="submit" class="submit" value="جست و جو">
-  </form>
+<form>
+  <label>
+    <input [(ngModel)]="value" (keyup)="onClickGet($event)" type="text" id="id" autocomplete="off" name="text"
+           class="search" placeholder="شماره حساب را وارد کنید...">
+  </label>
+  <input type="submit" name="submit" class="submit" value="جست و جو">
+</form>
 </body>
 </html>
