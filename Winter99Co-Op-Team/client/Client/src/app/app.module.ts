@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import {AccountsService} from "./app/services/accounts.service";
 import {SearchBarComponent} from "./menu/search-bar/search-bar.component";
 import {MenuModule} from "./menu/menu.module";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import {MenuModule} from "./menu/menu.module";
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    MenuModule
+    MenuModule,
+    FormsModule
   ],
   providers: [AccountsService],
   bootstrap: [AppComponent]

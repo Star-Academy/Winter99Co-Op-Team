@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import * as Ogma from '../assets/ogma.min.js';
 import {AccountsService} from './app/services/accounts.service';
 import {Account} from './models/Account';
@@ -61,6 +61,7 @@ export class AppComponent implements OnInit {
     });
     this.setWidthAndHeight();
     this.addEdgeRules();
+    this.addClickListener();
   }
 
   public addNode(id: string) {
@@ -85,6 +86,61 @@ export class AppComponent implements OnInit {
     });
   }
 
+  private addClickListener(){
+    let currentNode;
+
+    this.ogma.events.onClick(function(this, evt) {
+
+      if (evt.target === null) {
+        console.log('clicked on background at coordinates', evt.x, evt.y);
+      } else if (evt.target.isNode && evt.button === 'left') { // you have clicked on a node
+        console.log('clicked on a node with id', evt.target.getId());
+
+        var position = this.ogma.view.graphToScreenCoordinates({ x: evt.x, y: evt.y });
+
+        // showContextMenu(evt.target, position.x, position.y);
+
+        const app = document.getElementById("account-info");
+        const p = document.createElement("p");
+        p.textContent = evt.target.getId();
+        app?.appendChild(p);
+
+        const account = this.service.getAccount(evt.target.getId())
+
+        const p2 = document.createElement("p");
+        p2.textContent = account.then(r => r.Sheba);
+        app?.appendChild(p2);
+
+        const p3 = document.createElement("p");
+        p3.textContent = account.then(r => r.OwnerName);
+        app?.appendChild(p);
+      } else if (evt.button === 'right' && evt.target && evt.target.isNode) {
+        console.log("right clicked");
+        let selected = this.ogma.getSelectedNodes();
+
+        let group = false;
+
+        // show different menu tems for groups and single nodes
+        if (selected.includes(evt.target)) {
+          currentNode = selected;
+          group = true;
+        } else {
+          currentNode = evt.target;
+        }
+
+        // get screen coordinates to position the context menu
+        let position = this.ogma.view.graphToScreenCoordinates(evt.target.getPosition());
+
+        // The user-defined showMenu function displays the menu
+        // showMenu(position.x, position.y, group);
+      }
+      else { // it's an edge
+        let edge = evt.target;
+        console.log('clicked on an edge between ', edge.getSource().getId(), ' and', edge.getTarget().getId());
+      }
+    });
+  }
+
   private createNode(id: string) {
     for (const a of this.nodes) {
       if (a.id === id) {
@@ -97,7 +153,7 @@ export class AppComponent implements OnInit {
     if (accountResult === null) {
       return;
     }
-    console.log(id);
+    // console.log(id);
 
     let node = this.getNode(id);
 
@@ -111,11 +167,10 @@ export class AppComponent implements OnInit {
     const randomY = Math.random() * this.height - this.height / 2;
 
     let node = {
-      id: 'n' + id,
+      id: id,
       data: {name: id},
       attributes: {x: randomX, y: randomY, radius: 20}
     };
-
     return node;
   }
 
