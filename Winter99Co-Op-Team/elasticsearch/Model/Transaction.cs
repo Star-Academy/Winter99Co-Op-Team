@@ -15,7 +15,7 @@ namespace Winter99Co_Op_Team.elasticsearch.Model
         public DateTime Time { get; set; }
         [Number(NumberType.Long)]
         public long Amount { get; set; }
-        [Keyword(Name = "type", Normalizer = "lowercase")]
+        [Text(Name = "type", Analyzer = "standard")]
         public string Type { get; set; }
         [Keyword(Name = "transaction_id", Normalizer = "lowercase")]
         public string TransactionId { get; set;}

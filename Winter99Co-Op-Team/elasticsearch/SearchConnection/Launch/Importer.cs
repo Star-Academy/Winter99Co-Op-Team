@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Nest;
 
-namespace Winter99Co_Op_Team.elasticsearch.SearchConnection
+namespace Winter99Co_Op_Team.elasticsearch.SearchConnection.Launch
 {
     public class Importer<T> where T : class
     {

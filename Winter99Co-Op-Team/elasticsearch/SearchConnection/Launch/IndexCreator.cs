@@ -1,6 +1,6 @@
 ﻿using Nest;
 
-namespace Winter99Co_Op_Team.elasticsearch.SearchConnection
+namespace Winter99Co_Op_Team.elasticsearch.SearchConnection.Launch
 {
     public class IndexCreator<T> where T : class
     {
@@ -14,7 +14,9 @@ namespace Winter99Co_Op_Team.elasticsearch.SearchConnection
         public void CreateIndex(string indexName)
         {
             _elasticClient.Indices.Create(indexName,
-                descriptor => descriptor.Map<T>(x => x.AutoMap()));
+                descriptor => descriptor
+                    .Map<T>(x => x
+                        .AutoMap()));
         }
         
     }
