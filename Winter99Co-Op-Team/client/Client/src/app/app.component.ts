@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import * as Ogma from '../assets/ogma.min.js';
-import {HttpClient} from '@angular/common/http';
 import {AccountsService} from './app/services/accounts.service';
 import {Account} from './models/Account';
+import {Transaction} from "./models/Transaction";
 
 @Component({
   selector: 'app-root',
@@ -12,18 +12,15 @@ import {Account} from './models/Account';
 export class AppComponent implements OnInit {
   title = 'Client';
 
+  private account: Account;
+
   private ogma: Ogma;
-  // private nodes = Node[];
   private nodes = [];
   private links = [];
-  private nodesMaxCount = 10;
-  private nodesCount: number;
-  private linksCount: number;
   private width: number;
   private height: number;
 
-
-  private account1: Account = {
+  public account1: Account = {
     AccountType: 'سپرده',
     BranchAdress: 'تهران-خيابان شهيد مدنی-نبش خيابان اميرشرفی',
     BranchName: 'امیر شرفی',
@@ -59,21 +56,24 @@ export class AppComponent implements OnInit {
   }
 
   private initOgma(): void {
-
     this.ogma = new Ogma({
       container: 'graph-container',
     });
+    this.setWidthAndHeight();
+    this.addEdgeRules();
+  }
+
+  public addNode(id: string) {
+    this.createNode(id);
+    this.createLink(id);
+  }
+
+  private setWidthAndHeight() {
     this.width = 1080;
     this.height = 720;
-    // graph-container width and height
+  }
 
-    this.nodesCount = Math.floor(Math.random() * this.nodesMaxCount) + 1;
-    this.linksCount = Math.floor(Math.random() * this.nodesMaxCount);
-    // random nodes count and links count
-
-    this.ogma.addNodes(this.nodes);
-    // adding created nodes to ogma
-
+  private addEdgeRules(){
     this.ogma.styles.addEdgeRule({
       text: {
         maxLineLength: 140, // truncate
@@ -83,40 +83,81 @@ export class AppComponent implements OnInit {
         content: e => 'Edge ' + e.getId()
       }
     });
-
-    this.links.push(
-      {id: 'e' + 2, source: 'n' + 3, target: 'n' + 1, data: {name: 'parent'}}
-    ); // data is a custom dictionary for containing data
-    this.ogma.addEdges(this.links);
-    // adding created links to ogma
   }
 
-  private createNode(id: string): void {
+  private createNode(id: string) {
     for (const a of this.nodes) {
       if (a.id === id) {
         return;
       }
     }
+
     const accountResult = this.service.getAccount(id);
-    this.nodes.push({
-      id: accountResult.then(r => r.AccountID),
-      data: {name: accountResult.then(r => r.AccountID)},
-      attributes: {x: 50, y: 50, radius: 20}
-    });
+
+    if (accountResult === null) {
+      return;
+    }
+    console.log(id);
+
+    let node = this.getNode(id);
+
+    this.nodes.push(node);
+
+    this.ogma.addNodes(this.nodes);
   }
 
-  private async createLink(id: string): Promise<void> {
+  private getNode(id: string): any{
+    const randomX = Math.random() * this.width - this.width / 2;
+    const randomY = Math.random() * this.height - this.height / 2;
+
+    let node = {
+      id: 'n' + id,
+      data: {name: id},
+      attributes: {x: randomX, y: randomY, radius: 20}
+    };
+
+    return node;
+  }
+
+  private async createLink(id: string){
+
     const transactionsResult = this.service.getTransactionsOfAnAccount(id);
+
+    if (transactionsResult == null) {
+      return;
+    }
+
     const size = await transactionsResult.then(r => r.length);
+
     for (let i = 0; i < size; i++) {
+
       const transaction = transactionsResult.then(r => r.pop());
+
+      for (let i of this.links) {
+        if (i.id === transaction.then(r => r.transactionID)){
+          return
+        }
+      }
+
       this.createNode(await transaction.then(r => r.destiantionAccount));
-      this.links.push({
-        id: transaction.then(r => r.transactionID),
-        source: id,
-        target: transaction.then(r => r.destiantionAccount),
-        data: {name: 'parent', color: 'red'}
-      });
+
+      let link = this.getLink(id, transaction);
+
+      this.links.push(link);
+
+      this.ogma.addEdges(link);
     }
   }
+
+  private getLink(id: string, transaction: Promise<Transaction>):any{
+    let link = {
+      id: transaction.then(r => r.transactionID),
+      source: id,
+      target: transaction.then(r => r.destiantionAccount),
+      data: {name: 'parent', color: 'red'}
+    }
+
+    return link;
+  }
+
 }

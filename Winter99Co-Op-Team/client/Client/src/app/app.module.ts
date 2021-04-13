@@ -4,17 +4,19 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import {Account} from "./models/Account";
 import {AccountsService} from "./app/services/accounts.service";
+import {SearchBarComponent} from "./menu/search-bar/search-bar.component";
+import {MenuModule} from "./menu/menu.module";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    MenuModule
   ],
   providers: [AccountsService],
   bootstrap: [AppComponent]

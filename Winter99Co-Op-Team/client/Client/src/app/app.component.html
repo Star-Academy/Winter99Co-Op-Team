@@ -1,1 +1,18 @@
-<div id="graph-container"></div>
+<body dir="rtl">
+<div class="main-div">
+  <div>
+    <app-search-bar (searched)="addNode($event)">
+
+    </app-search-bar>
+  </div>
+  <div class="form-div">
+    <ul>
+      <p>{{account1.AccountID}}</p>
+      <p>{{account1.OwnerName}}</p>
+      <p>{{account1.Sheba}}</p>
+    </ul>
+  </div>
+  <div id="graph-container"> </div>
+</div>
+</body>
+
