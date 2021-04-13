@@ -14,7 +14,7 @@
       <None Update="elasticsearch\Data\AccountaDB.csv">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="elasticsearch\Data\TransactionsDB (1).csv">
+      <None Update="elasticsearch\Data\TransactionsDB.csv">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
