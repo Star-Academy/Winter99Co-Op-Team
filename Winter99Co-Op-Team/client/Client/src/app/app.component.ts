@@ -132,13 +132,23 @@ export class AppComponent implements OnInit {
         let position = this.ogma.view.graphToScreenCoordinates(evt.target.getPosition());
 
         // The user-defined showMenu function displays the menu
-        // showMenu(position.x, position.y, group);
+        this.showMenu(position.x, position.y, group);
       }
       else { // it's an edge
         let edge = evt.target;
         console.log('clicked on an edge between ', edge.getSource().getId(), ' and', edge.getTarget().getId());
       }
     }.bind(this));
+  }
+
+  private showMenu(x, y, group: boolean) {
+    var body = document.getElementById('body');
+    var d = document.createElement('p');
+    d.textContent = "salam";
+    d.style.position = "absolute";
+    d.style.left = x+'px';
+    d.style.top = y+'px';
+    body?.appendChild(d);
   }
 
   private createNode(id: string) {

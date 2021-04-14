@@ -10,10 +10,10 @@ export class AccountsService {
   }
 
   public async getAccount(id: string): Promise<Account> {
-    return this.http.post<Account>('https://localhost:5001/api/account/getaccount', {AccountId: id}).toPromise();
+    return this.http.post<Account>('https://localhost:5001/api/account/getaccount', {accountId: id}).toPromise();
   }
 
   public async getTransactionsOfAnAccount(id: string): Promise<Transaction[]> {
-    return this.http.post<Transaction[]>('https://localhost:5001/api/transaction/getTransactionsOfAnAccount', {AccountId: id}).toPromise();
+    return this.http.post<Transaction[]>('https://localhost:5001/api/transaction/getTransactionsOfAccount', {accountId: id}).toPromise();
   }
 }
