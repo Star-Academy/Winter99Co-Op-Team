@@ -1,1 +1,20 @@
-<div id="graph-container"></div>
+<body dir="rtl" id="body">
+<div class="main-div">
+  <div>
+    <app-search-bar (searched)="addNode($event)">
+
+    </app-search-bar>
+
+    <div id="account-info" class="form-div">
+<!--      <ul>-->
+<!--        <p [(ngModel)]="account1.AccountID">{{account1.AccountID}}</p>-->
+<!--        <p>{{account1.OwnerName}}</p>-->
+<!--        <p>{{account1.Sheba}}</p>-->
+<!--      </ul>-->
+    </div>
+  </div>
+
+  <div id="graph-container" > </div>
+</div>
+</body>
+
