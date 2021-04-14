@@ -20,7 +20,7 @@ namespace Winter99Co_Op_Team.elasticsearch.FileReader
 
         private static bool DoesFileExist(string path)
         {
-            if (!Directory.Exists(path))
+            if (!File.Exists(path))
                 throw new IOException("file doesn't exists!");
             return true;
         }
