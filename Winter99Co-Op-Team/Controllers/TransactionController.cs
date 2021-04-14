@@ -15,7 +15,8 @@ namespace Winter99Co_Op_Team.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetTransactionsOfAccount([FromBody] string accountId)
+        [HttpGet]
+        public IActionResult GetTransactionsOfAccount([FromQuery] string accountId)
         {
             var transactions = _transactionSearcher.GetAllTransactions(accountId);
             return Ok(transactions);

@@ -30,6 +30,7 @@ namespace Winter99Co_Op_Team
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddControllers();
             AddServices(services);
 
@@ -55,16 +56,21 @@ namespace Winter99Co_Op_Team
 
         private void AddServices(IServiceCollection services)
         {
+            var serviceProvider = services.BuildServiceProvider();
             var client = new ElasticClientFactory(Configuration).CreateElasticClient();
             if (!IsIndexExisting("account_index", client))
             {
+                
                 var accountIndexCreator = new IndexCreator<Account>(client);
                 accountIndexCreator.CreateIndex("account_index");
                 var transactionIndexCreator = new IndexCreator<Transaction>(client);
                 transactionIndexCreator.CreateIndex("transaction_index");
+                
                 IFileReader fileReader = new FileReader();
+                
                 IDeSerializer<Account> accountDeSerializer = new AccountDeSerializer();
                 var accounts = accountDeSerializer.DeSerializer(fileReader.ReadDate(_accountPath));
+                
                 IDeSerializer<Transaction> transactionDeserializer = new TransactionDeSerializer();
                 var transactions = transactionDeserializer.DeSerializer(fileReader.ReadDate(_transactionPath));
 
@@ -80,6 +86,7 @@ namespace Winter99Co_Op_Team
             ITransactionSearcher transactionSearcher =
                 new TransactionSearcher(client, transactionQueryCreator, "transaction_index");
             services.AddSingleton(transactionSearcher);
+           // services.AddSingleton<ITransactionSearcher>(p => { return new TransactionSearcher(p.GetService<IElasticClient>(), p.GetService(), )});
             services.AddSingleton(accountSearcher);
         }
 

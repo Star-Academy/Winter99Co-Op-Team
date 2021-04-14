@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Nest;
 
 namespace Winter99Co_Op_Team.elasticsearch.SearchConnection.Launch

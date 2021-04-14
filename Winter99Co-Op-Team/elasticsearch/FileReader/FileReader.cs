@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 
 namespace Winter99Co_Op_Team.elasticsearch.FileReader
 {
@@ -30,7 +31,7 @@ namespace Winter99Co_Op_Team.elasticsearch.FileReader
             var table = new DataTable();
             foreach (var columnName in header)
             {
-                table.Columns.Add(columnName);
+                table.Columns.Add(columnName.Trim('\"'));
             }
 
             return table;
@@ -41,7 +42,7 @@ namespace Winter99Co_Op_Team.elasticsearch.FileReader
             var row = streamReader.ReadLine();
             while (row != null)
             {
-                var columns = row.Split(",");
+                var columns = row.Split("\",\"").Select(x => x.Trim('\"')).Cast<object>().ToArray();
                 table.Rows.Add(columns);
                 row = streamReader.ReadLine();
             }

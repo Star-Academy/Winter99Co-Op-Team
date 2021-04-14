@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using Winter99Co_Op_Team.elasticsearch.Model;
 
@@ -25,6 +24,7 @@ namespace Winter99Co_Op_Team.elasticsearch.FileReader
                     OwnerFamilyName = row["OwnerFamilyName"].ToString(),
                     OwnerId = row["OwnerId"].ToString()
                 };
+
                 accounts.Add(account);
             }
 

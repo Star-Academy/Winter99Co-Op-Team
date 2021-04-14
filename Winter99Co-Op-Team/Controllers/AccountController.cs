@@ -15,7 +15,8 @@ namespace Winter99Co_Op_Team.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetAccount([FromBody] string accountId)
+        [HttpGet]
+        public IActionResult GetAccount([FromQuery] string accountId)
         {
             var account = _accountSearcher.GetAccountById(accountId);
             return Ok(account);

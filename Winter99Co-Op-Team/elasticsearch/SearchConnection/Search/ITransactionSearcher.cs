@@ -5,6 +5,6 @@ namespace Winter99Co_Op_Team.elasticsearch.SearchConnection.Search
 {
     public interface ITransactionSearcher
     {
-        IEnumerator<Transaction> GetAllTransactions(string accountId);
+        IEnumerable<Transaction> GetAllTransactions(string accountId);
     }
 }

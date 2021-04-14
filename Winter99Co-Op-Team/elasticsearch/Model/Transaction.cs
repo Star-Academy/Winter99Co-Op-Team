@@ -9,10 +9,10 @@ namespace Winter99Co_Op_Team.elasticsearch.Model
         public string SourceAccount { get; set; }
         [Keyword(Name = "destination_account", Normalizer = "lowercase")]
         public string DestinationAccount { get; set; }
-        [Date(Format = "yyyy/mm/dd")]
-        public DateTime Date { get; set; }
+        [Date(Format = "yyyy/MM/dd")]
+        public string Date { get; set; }
         [Date(Format = "HH:mm:ss")]
-        public DateTime Time { get; set; }
+        public string Time { get; set; }
         [Number(NumberType.Long)]
         public long Amount { get; set; }
         [Text(Name = "type", Analyzer = "standard")]

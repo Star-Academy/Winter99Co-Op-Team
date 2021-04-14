@@ -18,14 +18,14 @@ namespace Winter99Co_Op_Team.elasticsearch.SearchConnection.Search
             _index = index;
         }
 
-        public IEnumerator<Transaction> GetAllTransactions(string accountId)
+        public IEnumerable<Transaction> GetAllTransactions(string accountId)
         {
             var query = _queryCreator.GetAllTransactions(accountId);
             var response = _elasticClient.Search<Transaction>(s => s
                 .Index(_index)
                 .Query(q => query)
                 .Size(50));
-            return response.Documents.GetEnumerator();
+            return response.Documents;
         }
     }
 }
