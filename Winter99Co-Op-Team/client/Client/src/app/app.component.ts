@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import * as Ogma from '../assets/ogma.min.js';
 import {AccountsService} from './app/services/accounts.service';
 import {Account} from './models/Account';
-import {Transaction} from "./models/Transaction";
+import {Transaction} from './models/Transaction';
 
 @Component({
   selector: 'app-root',
@@ -74,7 +74,7 @@ export class AppComponent implements OnInit {
     this.height = 720;
   }
 
-  private addEdgeRules(){
+  private addEdgeRules() {
     this.ogma.styles.addEdgeRule({
       text: {
         maxLineLength: 140, // truncate
@@ -86,37 +86,37 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private addClickListener(){
+  private addClickListener() {
     let currentNode;
 
-    this.ogma.events.onClick(function(evt) {
+    this.ogma.events.onClick(function (evt) {
 
       if (evt.target === null) {
         console.log('clicked on background at coordinates', evt.x, evt.y);
       } else if (evt.target.isNode && evt.button === 'left') { // you have clicked on a node
         console.log('clicked on a node with id', evt.target.getId());
 
-        var position = this.ogma.view.graphToScreenCoordinates({ x: evt.x, y: evt.y });
+        const position = this.ogma.view.graphToScreenCoordinates({x: evt.x, y: evt.y});
 
         // showContextMenu(evt.target, position.x, position.y);
 
-        const app = document.getElementById("account-info");
-        const p = document.createElement("p");
+        const app = document.getElementById('account-info');
+        const p = document.createElement('p');
         p.textContent = evt.target.getId();
         app?.appendChild(p);
 
-        const account = this.service.getAccount(evt.target.getId())
+        const account = this.service.getAccount(evt.target.getId());
 
-        const p2 = document.createElement("p");
+        const p2 = document.createElement('p');
         p2.textContent = account.then(r => r.Sheba);
         app?.appendChild(p2);
 
-        const p3 = document.createElement("p");
+        const p3 = document.createElement('p');
         p3.textContent = account.then(r => r.OwnerName);
         app?.appendChild(p);
       } else if (evt.button === 'right' && evt.target && evt.target.isNode) {
-        console.log("right clicked");
-        let selected = this.ogma.getSelectedNodes();
+        console.log('right clicked');
+        const selected = this.ogma.getSelectedNodes();
 
         let group = false;
 
@@ -129,26 +129,137 @@ export class AppComponent implements OnInit {
         }
 
         // get screen coordinates to position the context menu
-        let position = this.ogma.view.graphToScreenCoordinates(evt.target.getPosition());
+        const position = this.ogma.view.graphToScreenCoordinates(evt.target.getPosition());
 
         // The user-defined showMenu function displays the menu
         this.showMenu(position.x, position.y, group);
-      }
-      else { // it's an edge
-        let edge = evt.target;
+      } else { // it's an edge
+        const edge = evt.target;
         console.log('clicked on an edge between ', edge.getSource().getId(), ' and', edge.getTarget().getId());
       }
     }.bind(this));
   }
 
-  private showMenu(x, y, group: boolean) {
-    var body = document.getElementById('body');
-    var d = document.createElement('p');
-    d.textContent = "salam";
-    d.style.position = "absolute";
-    d.style.left = x+'px';
-    d.style.top = y+'px';
-    body?.appendChild(d);
+
+  public showMenu(x, y, group: boolean) {
+    const body = document.getElementById('body');
+    const d = document.createElement('p');
+    d.textContent = 'bye';
+    d.style.position = 'absolute';
+    // d.style.left = x + 'px';
+    // d.style.top = y + 'px';
+    // body?.appendChild(d);
+
+    const mainDiv = document.createElement('div');
+    mainDiv.style.height = '80px';
+    mainDiv.style.width = '80px';
+    // mainDiv.style.position = 'absolute';
+    // mainDiv.style.margin = 'auto';
+    mainDiv.style.top = x + 'px';
+    // mainDiv.style.right = '0';
+    mainDiv.style.left = y + 'px';
+    // mainDiv.style.bottom = '0';
+    mainDiv.style.background = 'red';
+    // mainDiv.className = 'menu-items';
+    mainDiv?.appendChild(d);
+    body?.appendChild(mainDiv);
+
+    //
+    // const item1 = document.createElement('div');
+    // const item2 = document.createElement('div');
+    // const item3 = document.createElement('div');
+    //
+    // const a1 = document.createElement('a');
+    // const a2 = document.createElement('a');
+    // const a3 = document.createElement('a');
+    //
+    // const icon1 = document.createElement('i');
+    // const icon2 = document.createElement('i');
+    // const icon3 = document.createElement('i');
+    //
+    // item1.className = 'item1';
+    // item1.id = 'item1';
+    // const center1 = document.createElement('div');
+    // center1.style.textAlign = 'center';
+    // icon1.className = 'fa fa-trash-o';
+    // a1.appendChild(icon1);
+    // center1.appendChild(a1);
+    // item1.appendChild(center1);
+    //
+    // item2.className = 'item2';
+    // item2.id = 'item2';
+    // const center2 = document.createElement('div');
+    // center2.style.textAlign = 'center';
+    // icon2.className = 'fa fa-expand';
+    // a2.appendChild(icon1);
+    // center2.appendChild(a2);
+    // item2.appendChild(center2);
+    //
+    // item3.className = 'item3';
+    // item3.id = 'item3';
+    // const center3 = document.createElement('div');
+    // center3.style.textAlign = 'center';
+    // icon3.className = 'fa fa-trash-o';
+    // a3.appendChild(icon3);
+    // center3.appendChild(a3);
+    // item3.appendChild(center3);
+    //
+    // mainDiv.appendChild(item1);
+    // mainDiv.appendChild(item2);
+    // mainDiv.appendChild(item3);
+    //
+    //
+    // // ToDo
+    // // style of main-items > div
+    //
+    //
+    // a1.style.color = 'white';
+    // a2.style.color = 'white';
+    // a3.style.color = 'white';
+    //
+    // item2.style.bottom = '80px';
+    // item3.style.bottom = '160px';
+    //
+    // body?.appendChild(mainDiv);
+    //
+    // // <div class="menu-items">
+    // // <div class="item1" id="item1">
+    // // <div style="text-align: center;">
+    // // <a href="#">
+    // // <i class="fa fa-trash-o"></i>
+    // //   </a>
+    // //   </div>
+    // //   </div>
+    // //   <div class="item2" id="item2">
+    // // <div style="text-align: center;">
+    // // <a href="#">
+    // // <i class="fa fa-expand"></i>
+    // //   </a>
+    // //   </div>
+    // //   </div>
+    // //   <div class="item3" id="item3">
+    // // <div style="text-align: center;">
+    // // <a href="#">
+    // // <i class="fa fa-check"></i>
+    // //   </a>
+    // //   </div>
+    // //   </div>
+    // //   </div>
+    // let i = 0;
+    // if (i === 0) {
+    //   // document.getElementById('item1').style.transform = 'translate(' + x + '-90px,' + y + '-60px)';
+    //   // document.getElementById('item2').style.transform = 'translateY(' + y + '-120px)';
+    //   // document.getElementById('item3').style.transform = 'translate(' + x + '90px,' + y + '-60px)';
+    //   item1.style.transform = 'translate(' + x + '-90px,' + y + '-60px)';
+    //   item2.style.transform = 'translateY(' + y + '-120px)';
+    //   item3.style.transform = 'translate(' + x + '90px,' + y + '-60px)';
+    //   i = 1;
+    // } else {
+    //   document.getElementById('item1').style.transform = 'translate(0)';
+    //   document.getElementById('item2').style.transform = 'translate(0)';
+    //   document.getElementById('item3').style.transform = 'translate(0)';
+    //   i = 0;
+    // }
   }
 
   private createNode(id: string) {
@@ -165,26 +276,26 @@ export class AppComponent implements OnInit {
     }
     // console.log(id);
 
-    let node = this.getNode(id);
+    const node = this.getNode(id);
 
     this.nodes.push(node);
 
     this.ogma.addNodes(this.nodes);
   }
 
-  private getNode(id: string): any{
+  private getNode(id: string): any {
     const randomX = Math.random() * this.width - this.width / 2;
     const randomY = Math.random() * this.height - this.height / 2;
 
-    let node = {
-      id: id,
+    const node = {
+      id,
       data: {name: id},
       attributes: {x: randomX, y: randomY, radius: 20}
     };
     return node;
   }
 
-  private async createLink(id: string){
+  private async createLink(id: string) {
 
     const transactionsResult = this.service.getTransactionsOfAnAccount(id);
 
@@ -198,15 +309,15 @@ export class AppComponent implements OnInit {
 
       const transaction = transactionsResult.then(r => r.pop());
 
-      for (let i of this.links) {
-        if (i.id === transaction.then(r => r.transactionID)){
-          return
+      for (const i of this.links) {
+        if (i.id === transaction.then(r => r.transactionID)) {
+          return;
         }
       }
 
       this.createNode(await transaction.then(r => r.destiantionAccount));
 
-      let link = this.getLink(id, transaction);
+      const link = this.getLink(id, transaction);
 
       this.links.push(link);
 
@@ -214,13 +325,13 @@ export class AppComponent implements OnInit {
     }
   }
 
-  private getLink(id: string, transaction: Promise<Transaction>):any{
-    let link = {
+  private getLink(id: string, transaction: Promise<Transaction>): any {
+    const link = {
       id: transaction.then(r => r.transactionID),
       source: id,
       target: transaction.then(r => r.destiantionAccount),
       data: {name: 'parent', color: 'red'}
-    }
+    };
     return link;
   }
 
