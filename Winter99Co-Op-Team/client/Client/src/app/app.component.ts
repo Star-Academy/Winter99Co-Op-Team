@@ -89,7 +89,7 @@ export class AppComponent implements OnInit {
   private addClickListener(){
     let currentNode;
 
-    this.ogma.events.onClick(function(this, evt) {
+    this.ogma.events.onClick(function(evt) {
 
       if (evt.target === null) {
         console.log('clicked on background at coordinates', evt.x, evt.y);
@@ -138,7 +138,7 @@ export class AppComponent implements OnInit {
         let edge = evt.target;
         console.log('clicked on an edge between ', edge.getSource().getId(), ' and', edge.getTarget().getId());
       }
-    });
+    }.bind(this));
   }
 
   private createNode(id: string) {
