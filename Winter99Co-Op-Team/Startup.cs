@@ -18,6 +18,8 @@ namespace Winter99Co_Op_Team
         public IConfiguration Configuration { get; }
         private readonly string _accountPath;
         private readonly string _transactionPath;
+        private readonly string _accountIndex;
+        private readonly string _transactionIndex;
 
 
         public Startup(IConfiguration configuration)
@@ -25,28 +27,16 @@ namespace Winter99Co_Op_Team
             Configuration = configuration;
             _accountPath = Configuration.GetValue<string>("AccountPath");
             _transactionPath = Configuration.GetValue<string>("TransactionPath");
+            _accountIndex = Configuration.GetValue<string>("AccountIndex");
+            _transactionIndex = Configuration.GetValue<string>("TransactionIndex");
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
-            AddServices(services);
-
-            // var client = new ElasticClientFactory(Configuration).CreateElasticClient();
-            // services.AddSingleton(client);
-            //
-            //
-            // var importer = (IElasticClient)services.BuildServiceProvider().GetService(typeof(IElasticClient));
-            // services.AddSingleton<IndexCreator<Account>>();
-            // services.AddSingleton<IndexCreator<Transaction>>();
-            // services.AddSingleton<Importer<Account>>();
-            // services.AddSingleton<Importer<Transaction>>();
-            // services.AddTransient<IAccountQueryCreator, AccountQueryCreator>();
-            // services.AddTransient<ITransactionQueryCreator, TransactionQueryCreator>();
-            // services.AddSingleton(new AccountSearcher(client, , _accountPath));
-
+            AddClassesToIoC(services);
+            RunApplication(services);
 
             services.AddSwaggerGen(c =>
             {
@@ -54,41 +44,55 @@ namespace Winter99Co_Op_Team
             });
         }
 
-        private void AddServices(IServiceCollection services)
+        private void RunApplication(IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();
-            var client = new ElasticClientFactory(Configuration).CreateElasticClient();
-            if (!IsIndexExisting("account_index", client))
-            {
-                
-                var accountIndexCreator = new IndexCreator<Account>(client);
-                accountIndexCreator.CreateIndex("account_index");
-                var transactionIndexCreator = new IndexCreator<Transaction>(client);
-                transactionIndexCreator.CreateIndex("transaction_index");
-                
-                IFileReader fileReader = new FileReader();
-                
-                IDeSerializer<Account> accountDeSerializer = new AccountDeSerializer();
-                var accounts = accountDeSerializer.DeSerializer(fileReader.ReadDate(_accountPath));
-                
-                IDeSerializer<Transaction> transactionDeserializer = new TransactionDeSerializer();
-                var transactions = transactionDeserializer.DeSerializer(fileReader.ReadDate(_transactionPath));
+            var client = serviceProvider.GetService<IElasticClient>();
+            if (IsIndexExisting(_accountIndex, client))
+                return;
+            
+            var fileReader = serviceProvider.GetService<IFileReader>();
+            var accountDeserializer = serviceProvider.GetService<IDeSerializer<Account>>();
+            var transactionDeserializer = serviceProvider.GetService<IDeSerializer<Transaction>>();
+            var accounts = accountDeserializer?.DeSerializer(fileReader?.ReadDate(_accountPath));
+            var transactions = transactionDeserializer?.DeSerializer(fileReader?.ReadDate(_transactionPath));
 
-                var accountImporter = new Importer<Account>(client);
-                accountImporter.Import(accounts, "account_index");
-                var transactionImporter = new Importer<Transaction>(client);
-                transactionImporter.Import(transactions, "transaction_index");
-            }
-
-            IAccountQueryCreator accountQueryCreator = new AccountQueryCreator();
-            ITransactionQueryCreator transactionQueryCreator = new TransactionQueryCreator();
-            IAccountSearcher accountSearcher = new AccountSearcher(client, accountQueryCreator, "account_index");
-            ITransactionSearcher transactionSearcher =
-                new TransactionSearcher(client, transactionQueryCreator, "transaction_index");
-            services.AddSingleton(transactionSearcher);
-           // services.AddSingleton<ITransactionSearcher>(p => { return new TransactionSearcher(p.GetService<IElasticClient>(), p.GetService(), )});
-            services.AddSingleton(accountSearcher);
+            var accountIndexCreator = serviceProvider.GetService<IndexCreator<Account>>();
+            var transactionIndexCreator = serviceProvider.GetService<IndexCreator<Transaction>>();
+            accountIndexCreator?.CreateIndex(_accountIndex);
+            transactionIndexCreator?.CreateIndex(_transactionIndex);
+            
+            var accountImporter = serviceProvider.GetService<Importer<Account>>();
+            var transactionImporter = serviceProvider.GetService<Importer<Transaction>>();
+            accountImporter?.Import(accounts, _accountIndex);
+            transactionImporter?.Import(transactions, _transactionIndex);
         }
+
+        private void AddClassesToIoC(IServiceCollection services)
+        {
+            services.AddSingleton<IFileReader, FileReader>();
+            services.AddSingleton<IDeSerializer<Account>, AccountDeSerializer>();
+            services.AddSingleton<IDeSerializer<Transaction>, TransactionDeSerializer>();
+
+            var client = new ElasticClientFactory(Configuration).CreateElasticClient();
+            services.AddSingleton(client);
+            services.AddSingleton<IndexCreator<Account>>();
+            services.AddSingleton<IndexCreator<Transaction>>();
+            services.AddSingleton<Importer<Account>>();
+            services.AddSingleton<Importer<Transaction>>();
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            services.AddSingleton<IAccountQueryCreator, AccountQueryCreator>();
+            services.AddSingleton<ITransactionQueryCreator, TransactionQueryCreator>();
+            services.AddSingleton<IAccountSearcher>(new AccountSearcher(client,
+                serviceProvider.GetService<IAccountQueryCreator>(),
+                _accountIndex));
+            services.AddSingleton<ITransactionSearcher>(new TransactionSearcher(client,
+                serviceProvider.GetService<ITransactionQueryCreator>(),
+                _transactionIndex));
+        }
+
 
         private static bool IsIndexExisting(string indexName, IElasticClient client)
         {

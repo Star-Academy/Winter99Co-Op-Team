@@ -17,15 +17,9 @@ namespace Winter99Co_Op_Team.elasticsearch.FileReader
                 {
                     SourceAccount = row["SourceAccount"].ToString(),
                     DestinationAccount = row["DestinationAccount"].ToString(),
-                    
-                    Date = DateTime.ParseExact(row["Date"].ToString(), "M/d/yyyy",
-                            CultureInfo.InvariantCulture)
-                        .ToString("yyyy/MM/dd", CultureInfo.InvariantCulture),
-                    
-                    Time = DateTime.ParseExact(row["Time"].ToString(), "H:mm:ss",
-                        CultureInfo.InvariantCulture).TimeOfDay.ToString(),
-                    
-                    Amount = long.Parse(row["Amount"].ToString()?.Replace(",", "") ?? string.Empty),
+                    Date = DeserializeDate(row["Date"].ToString()),
+                    Time = DeserializeTime(row["Time"].ToString()),
+                    Amount = DeserializeAmount(row["Amount"].ToString()),
                     Type = row["Type"].ToString(),
                     TransactionId = row["TransactionId"].ToString()
                 };
@@ -33,6 +27,23 @@ namespace Winter99Co_Op_Team.elasticsearch.FileReader
             }
 
             return transactions;
+        }
+
+        private static long DeserializeAmount(string amount)
+        {
+            return long.Parse(amount.Replace(",", ""));
+        }
+
+        private static string DeserializeTime(string time)
+        {
+            return DateTime.ParseExact(time, "H:mm:ss", CultureInfo.InvariantCulture)
+                .TimeOfDay.ToString();
+        }
+
+        private static string DeserializeDate(string date)
+        {
+            return DateTime.ParseExact(date, "M/d/yyyy", CultureInfo.InvariantCulture)
+                .ToString("yyyy/MM/dd", CultureInfo.InvariantCulture);
         }
     }
 }
