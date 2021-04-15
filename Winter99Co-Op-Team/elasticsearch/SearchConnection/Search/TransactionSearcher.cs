@@ -24,7 +24,7 @@ namespace Winter99Co_Op_Team.elasticsearch.SearchConnection.Search
             var response = _elasticClient.Search<Transaction>(s => s
                 .Index(_index)
                 .Query(q => query)
-                .Size(50));
+                .Size(100));
             return response.Documents;
         }
     }

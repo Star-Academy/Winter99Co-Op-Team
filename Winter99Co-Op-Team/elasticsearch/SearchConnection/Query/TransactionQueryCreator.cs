@@ -15,7 +15,7 @@ namespace Winter99Co_Op_Team.elasticsearch.SearchConnection.Query
             return query;
         }
 
-        private IEnumerable<QueryContainer> SetupShouldQuery(string accountId)
+        private static IEnumerable<QueryContainer> SetupShouldQuery(string accountId)
         {
             var shouldQuery = new List<QueryContainer>()
             {

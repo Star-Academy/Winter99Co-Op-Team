@@ -14,12 +14,21 @@ namespace Winter99Co_Op_Team.Controllers
             _transactionSearcher = transactionSearcher;
         }
 
-        [HttpPost]
-        [HttpGet]
-        public IActionResult GetTransactionsOfAccount([FromQuery] string accountId)
+        [HttpPost, HttpGet]
+        public IActionResult GetTransactionsOfAccount([FromQuery, FromBody] string accountId)
         {
+            if (!IsInputValid(accountId))
+                return Ok("Input Format is incorrect");
+
             var transactions = _transactionSearcher.GetAllTransactions(accountId);
             return Ok(transactions);
+        }
+
+        private static bool IsInputValid(string accountId)
+        {
+            if (!long.TryParse(accountId, out var number))
+                return false;
+            return accountId.Length == 10;
         }
     }
 }
