@@ -19,6 +19,10 @@ export class AppComponent implements OnInit {
   private links = [];
   private width: number;
   private height: number;
+  private counter: number;
+  private item1: HTMLElement;
+  private item2: HTMLElement;
+  private item3: HTMLElement;
 
   public account1: Account = {
     AccountType: 'سپرده',
@@ -62,6 +66,10 @@ export class AppComponent implements OnInit {
     this.setWidthAndHeight();
     this.addEdgeRules();
     this.addClickListener();
+    this.item1 = document.createElement('div');
+    this.item2 = document.createElement('div');
+    this.item3 = document.createElement('div');
+
   }
 
   public addNode(id: string) {
@@ -143,26 +151,78 @@ export class AppComponent implements OnInit {
 
   public showMenu(x, y, group: boolean) {
     const body = document.getElementById('body');
-    const d = document.createElement('p');
-    d.textContent = 'bye';
-    d.style.position = 'absolute';
-    // d.style.left = x + 'px';
-    // d.style.top = y + 'px';
-    // body?.appendChild(d);
+    // const item1 = document.createElement('div');
+    // const item2 = document.createElement('div');
+    // const item3 = document.createElement('div');
+    if (this.counter === 0) {
+      this.item1.style.height = '30px';
+      this.item1.style.width = '30px';
+      this.item1.style.position = 'absolute';
+      this.item1.style.margin = 'auto';
+      this.item1.style.top = y - 50 + 'px';
+      this.item1.style.left = x - 50 + 'px';
+      this.item1.style.background = 'red';
+      this.item1.style.borderRadius = '50%';
+      this.item1.className = 'menu-items';
 
-    const mainDiv = document.createElement('div');
-    mainDiv.style.height = '80px';
-    mainDiv.style.width = '80px';
-    // mainDiv.style.position = 'absolute';
-    // mainDiv.style.margin = 'auto';
-    mainDiv.style.top = x + 'px';
-    // mainDiv.style.right = '0';
-    mainDiv.style.left = y + 'px';
-    // mainDiv.style.bottom = '0';
-    mainDiv.style.background = 'red';
-    // mainDiv.className = 'menu-items';
-    mainDiv?.appendChild(d);
-    body?.appendChild(mainDiv);
+      this.item2.style.height = '30px';
+      this.item2.style.width = '30px';
+      this.item2.style.position = 'absolute';
+      this.item2.style.margin = 'auto';
+      this.item2.style.top = y - 65 + 'px';
+      this.item2.style.left = x + 'px';
+      this.item2.style.background = 'red';
+      this.item2.style.borderRadius = '50%';
+      this.item2.className = 'menu-items';
+
+      this.item3.style.height = '30px';
+      this.item3.style.width = '30px';
+      this.item3.style.position = 'absolute';
+      this.item3.style.margin = 'auto';
+      this.item3.style.top = y - 50 + 'px';
+      this.item3.style.left = x + 50 + 'px';
+      this.item3.style.background = 'red';
+      this.item3.style.borderRadius = '50%';
+      this.item3.className = 'menu-items';
+      console.log(this.counter);
+      this.counter = 1;
+    } else {
+      this.item1.style.height = '0px';
+      this.item1.style.width = '0px';
+      this.item1.style.position = 'absolute';
+      this.item1.style.margin = 'auto';
+      this.item1.style.top = y - 50 + 'px';
+      this.item1.style.left = x - 50 + 'px';
+      this.item1.style.background = 'red';
+      this.item1.style.borderRadius = '50%';
+      this.item1.className = 'menu-items';
+
+      this.item2.style.height = '0px';
+      this.item2.style.width = '0px';
+      this.item2.style.position = 'absolute';
+      this.item2.style.margin = 'auto';
+      this.item2.style.top = y - 65 + 'px';
+      this.item2.style.left = x + 'px';
+      this.item2.style.background = 'red';
+      this.item2.style.borderRadius = '50%';
+      this.item2.className = 'menu-items';
+
+      this.item3.style.height = '0px';
+      this.item3.style.width = '0px';
+      this.item3.style.position = 'absolute';
+      this.item3.style.margin = 'auto';
+      this.item3.style.top = y - 50 + 'px';
+      this.item3.style.left = x + 50 + 'px';
+      this.item3.style.background = 'red';
+      this.item3.style.borderRadius = '50%';
+      this.item3.className = 'menu-items';
+      console.log(this.counter);
+      this.counter = 0;
+    }
+
+    body?.appendChild(this.item1);
+    body?.appendChild(this.item2);
+    body?.appendChild(this.item3);
 
     //
     // const item1 = document.createElement('div');
@@ -245,21 +305,6 @@ export class AppComponent implements OnInit {
     // //   </div>
     // //   </div>
     // //   </div>
-    // let i = 0;
-    // if (i === 0) {
-    //   // document.getElementById('item1').style.transform = 'translate(' + x + '-90px,' + y + '-60px)';
-    //   // document.getElementById('item2').style.transform = 'translateY(' + y + '-120px)';
-    //   // document.getElementById('item3').style.transform = 'translate(' + x + '90px,' + y + '-60px)';
-    //   item1.style.transform = 'translate(' + x + '-90px,' + y + '-60px)';
-    //   item2.style.transform = 'translateY(' + y + '-120px)';
-    //   item3.style.transform = 'translate(' + x + '90px,' + y + '-60px)';
-    //   i = 1;
-    // } else {
-    //   document.getElementById('item1').style.transform = 'translate(0)';
-    //   document.getElementById('item2').style.transform = 'translate(0)';
-    //   document.getElementById('item3').style.transform = 'translate(0)';
-    //   i = 0;
-    // }
   }
 
   private createNode(id: string) {
