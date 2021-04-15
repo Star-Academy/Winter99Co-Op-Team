@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Winter99Co_Op_Team.elasticsearch.SearchConnection.Search;
 
 namespace Winter99Co_Op_Team.Controllers
@@ -15,13 +16,15 @@ namespace Winter99Co_Op_Team.Controllers
             _accountSearcher = accountSearcher;
         }
 
-        [HttpPost, HttpGet]
-        public IActionResult GetAccount([FromQuery, FromBody] string accountId)
+        [HttpPost]
+        public IActionResult GetAccount([FromBody] JObject accountId)
         {
-            if (!IsInputValid(accountId))
+            accountId.TryGetValue("accountId", out var value);
+            var stringAccountId = value?.ToString();
+            if (!IsInputValid(stringAccountId))
                 return Ok("Input Format is incorrect");
 
-            var account = _accountSearcher.GetAccountById(accountId);
+            var account = _accountSearcher.GetAccountById(stringAccountId);
             return Ok(account);
         }
 

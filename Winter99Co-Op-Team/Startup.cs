@@ -31,10 +31,11 @@ namespace Winter99Co_Op_Team
             _transactionIndex = Configuration.GetValue<string>("TransactionIndex");
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
+            services.AddMvc().AddNewtonsoftJson();
+            
             AddClassesToIoC(services);
             RunApplication(services);
 
@@ -80,17 +81,14 @@ namespace Winter99Co_Op_Team
             services.AddSingleton<IndexCreator<Transaction>>();
             services.AddSingleton<Importer<Account>>();
             services.AddSingleton<Importer<Transaction>>();
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            services.AddSingleton<IAccountQueryCreator, AccountQueryCreator>();
-            services.AddSingleton<ITransactionQueryCreator, TransactionQueryCreator>();
+            
+            IAccountQueryCreator accountQueryCreator = new AccountQueryCreator();
+            ITransactionQueryCreator transactionQueryCreator = new TransactionQueryCreator();
+            
             services.AddSingleton<IAccountSearcher>(new AccountSearcher(client,
-                serviceProvider.GetService<IAccountQueryCreator>(),
-                _accountIndex));
+                accountQueryCreator, _accountIndex));
             services.AddSingleton<ITransactionSearcher>(new TransactionSearcher(client,
-                serviceProvider.GetService<ITransactionQueryCreator>(),
-                _transactionIndex));
+                transactionQueryCreator, _transactionIndex));
         }
 
 
