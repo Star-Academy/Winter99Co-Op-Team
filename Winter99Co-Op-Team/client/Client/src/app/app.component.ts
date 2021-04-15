@@ -73,7 +73,7 @@ export class AppComponent implements OnInit {
   private addClickListener() {
     let currentNode;
 
-    this.ogma.events.onClick(function (evt) {
+    this.ogma.events.onClick(async function (evt) {
 
       if (evt.target === null) {
         console.log('clicked on background at coordinates', evt.x, evt.y);
@@ -89,15 +89,15 @@ export class AppComponent implements OnInit {
         p.textContent = evt.target.getId();
         app?.appendChild(p);
 
-        const account = this.service.getAccount(evt.target.getId());
+        const account = await this.service.getAccount(evt.target.getId());
 
         const p2 = document.createElement('p');
-        p2.textContent = account.then(r => r.Sheba);
+        p2.textContent = account.sheba;
         app?.appendChild(p2);
 
         const p3 = document.createElement('p');
-        p3.textContent = account.then(r => r.OwnerName);
-        app?.appendChild(p);
+        p3.textContent = account.ownerName;
+        app?.appendChild(p3);
       } else if (evt.button === 'right' && evt.target && evt.target.isNode) {
         console.log('right clicked');
         const selected = this.ogma.getSelectedNodes();
@@ -282,22 +282,19 @@ export class AppComponent implements OnInit {
     // //   </div>
   }
 
-  private createNode(id: string) {
+  private async createNode(id: string) {
     for (const a of this.nodes) {
       if (a.id === id) {
         return;
       }
     }
 
-    const accountResult = this.service.getAccount(id) as unknown as Account;
-    console.log(accountResult);
-    console.log(this.counter1);
-    this.counter1 += 1;
+    const accountResult = await this.service.getAccount(id);
+    console.log(accountResult.accountId);
 
     if (Object.values(accountResult)[0] === null) {
       return;
     }
-
 
     const node = this.getNode(id);
 
