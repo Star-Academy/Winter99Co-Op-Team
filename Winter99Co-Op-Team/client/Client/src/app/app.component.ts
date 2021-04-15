@@ -23,31 +23,7 @@ export class AppComponent implements OnInit {
   private item1: HTMLElement;
   private item2: HTMLElement;
   private item3: HTMLElement;
-
-  public account1: Account = {
-    AccountType: 'سپرده',
-    BranchAdress: 'تهران-خيابان شهيد مدنی-نبش خيابان اميرشرفی',
-    BranchName: 'امیر شرفی',
-    BranchTelephone: '212154454',
-    CardID: '6037699000000020',
-    OwnerFamilyName: 'سلامی',
-    OwnerID: '122121',
-    OwnerName: 'سلام',
-    Sheba: 'IR033880987114000000028',
-    AccountID: '4000000028'
-  };
-  private account2: Account = {
-    AccountType: 'سپرده',
-    BranchAdress: 'تهران-خيابان شهيد مدنی-نبش خيابان امیر غربی',
-    BranchName: 'امیر غربی',
-    BranchTelephone: '9999999',
-    CardID: '8888888',
-    OwnerFamilyName: 'خدافظی',
-    OwnerID: '111111',
-    OwnerName: 'سلام',
-    Sheba: 'IR03388098788888888',
-    AccountID: '78787878787'
-  };
+  private counter1: number = 0;
 
 
   constructor(private service: AccountsService) {
@@ -74,7 +50,7 @@ export class AppComponent implements OnInit {
 
   public addNode(id: string) {
     this.createNode(id);
-    this.createLink(id);
+    // this.createLink(id);
   }
 
   private setWidthAndHeight() {
@@ -147,7 +123,6 @@ export class AppComponent implements OnInit {
       }
     }.bind(this));
   }
-
 
   public showMenu(x, y, group: boolean) {
     const body = document.getElementById('body');
@@ -314,12 +289,15 @@ export class AppComponent implements OnInit {
       }
     }
 
-    const accountResult = this.service.getAccount(id);
+    const accountResult = this.service.getAccount(id) as unknown as Account;
+    console.log(accountResult);
+    console.log(this.counter1);
+    this.counter1 += 1;
 
-    if (accountResult === null) {
+    if (Object.values(accountResult)[0] === null) {
       return;
     }
-    // console.log(id);
+
 
     const node = this.getNode(id);
 
