@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -37,7 +38,6 @@ namespace Winter99Co_Op_Team
             services.AddMvc().AddNewtonsoftJson();
             
             AddClassesToIoC(services);
-            RunApplication(services);
 
             services.AddSwaggerGen(c =>
             {
@@ -45,9 +45,30 @@ namespace Winter99Co_Op_Team
             });
         }
 
-        private void RunApplication(IServiceCollection services)
+        private void AddClassesToIoC(IServiceCollection services)
         {
-            var serviceProvider = services.BuildServiceProvider();
+            services.AddSingleton<IFileReader, FileReader>();
+            services.AddSingleton<IDeSerializer<Account>, AccountDeSerializer>();
+            services.AddSingleton<IDeSerializer<Transaction>, TransactionDeSerializer>();
+
+            var client = new ElasticClientFactory(Configuration).CreateElasticClient();
+            services.AddSingleton(client);
+            services.AddSingleton<IndexCreator<Account>>();
+            services.AddSingleton<IndexCreator<Transaction>>();
+            services.AddSingleton<Importer<Account>>();
+            services.AddSingleton<Importer<Transaction>>();
+
+            services.AddSingleton<IAccountQueryCreator, AccountQueryCreator>();
+            services.AddSingleton<ITransactionQueryCreator, TransactionQueryCreator>();
+
+            services.AddSingleton<IAccountSearcher>(p => new AccountSearcher(client,
+                p.GetService<IAccountQueryCreator>(), _accountIndex));
+            services.AddSingleton<ITransactionSearcher>(p => new TransactionSearcher(client,
+                p.GetService<ITransactionQueryCreator>(), _transactionIndex));
+        }
+
+        private void RunApplication(IServiceProvider serviceProvider)
+        {
             var client = serviceProvider.GetService<IElasticClient>();
             if (IsIndexExisting(_accountIndex, client))
                 return;
@@ -68,39 +89,17 @@ namespace Winter99Co_Op_Team
             accountImporter?.Import(accounts, _accountIndex);
             transactionImporter?.Import(transactions, _transactionIndex);
         }
-
-        private void AddClassesToIoC(IServiceCollection services)
-        {
-            services.AddSingleton<IFileReader, FileReader>();
-            services.AddSingleton<IDeSerializer<Account>, AccountDeSerializer>();
-            services.AddSingleton<IDeSerializer<Transaction>, TransactionDeSerializer>();
-
-            var client = new ElasticClientFactory(Configuration).CreateElasticClient();
-            services.AddSingleton(client);
-            services.AddSingleton<IndexCreator<Account>>();
-            services.AddSingleton<IndexCreator<Transaction>>();
-            services.AddSingleton<Importer<Account>>();
-            services.AddSingleton<Importer<Transaction>>();
-            
-            IAccountQueryCreator accountQueryCreator = new AccountQueryCreator();
-            ITransactionQueryCreator transactionQueryCreator = new TransactionQueryCreator();
-            
-            services.AddSingleton<IAccountSearcher>(new AccountSearcher(client,
-                accountQueryCreator, _accountIndex));
-            services.AddSingleton<ITransactionSearcher>(new TransactionSearcher(client,
-                transactionQueryCreator, _transactionIndex));
-        }
-
-
+        
         private static bool IsIndexExisting(string indexName, IElasticClient client)
         {
             var response = client.Indices.Exists(indexName);
             return response.Exists;
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            RunApplication(app.ApplicationServices);
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
