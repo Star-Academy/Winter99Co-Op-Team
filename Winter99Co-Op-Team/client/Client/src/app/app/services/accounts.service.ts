@@ -10,11 +10,12 @@ export class AccountsService {
   }
 
   public async getAccount(id: string): Promise<Account> {
-    const response = await this.http.post<Account>('https://localhost:5001/account/getaccount', {accountId : id}).toPromise();
+    const response = await this.http.post<Account>('https://localhost:5001/account/getaccount', {accountId: id}).toPromise();
     return response;
   }
 
   public async getTransactionsOfAnAccount(id: string): Promise<Transaction[]> {
-    return this.http.post<Transaction[]>('https://localhost:5001/transaction/getTransactionsOfAccount', {accountId: id}).toPromise();
+    const response = await this.http.post<Transaction[]>('https://localhost:5001/transaction/getTransactionsOfAccount', {accountId: id}).toPromise();
+    return response;
   }
 }

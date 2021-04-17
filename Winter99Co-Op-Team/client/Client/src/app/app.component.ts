@@ -24,6 +24,10 @@ export class AppComponent implements OnInit {
   private item2: HTMLDivElement;
   private item3: HTMLDivElement;
   private script: HTMLScriptElement;
+  private p: HTMLParagraphElement;
+  private p2: HTMLParagraphElement;
+  private p3: HTMLParagraphElement;
+  private p4: HTMLParagraphElement;
 
 
   constructor(private service: AccountsService) {
@@ -39,6 +43,7 @@ export class AppComponent implements OnInit {
     this.ogma = new Ogma({
       container: 'graph-container',
     });
+
     this.setWidthAndHeight();
     this.addEdgeRules();
     this.addClickListener();
@@ -88,12 +93,15 @@ export class AppComponent implements OnInit {
     center3.appendChild(a3);
     this.item3.appendChild(center3);
 
+    this.p = document.createElement('p');
+    this.p2 = document.createElement('p');
+    this.p3 = document.createElement('p');
+    this.p4 = document.createElement('p');
 
   }
 
   public addNode(id: string) {
     this.createNode(id);
-    // this.createLink(id);
   }
 
   private setWidthAndHeight() {
@@ -108,7 +116,7 @@ export class AppComponent implements OnInit {
         size: 12,
         color: 'black',
         minVisibleSize: 2,
-        content: e => 'Edge ' + e.getId()
+        content: e => e.getId()
       }
     });
   }
@@ -119,30 +127,27 @@ export class AppComponent implements OnInit {
     this.ogma.events.onClick(async function (evt) {
 
       if (evt.target === null) {
-        console.log('clicked on background at coordinates', evt.x, evt.y);
       } else if (evt.target.isNode && evt.button === 'left') { // you have clicked on a node
-        console.log('clicked on a node with id', evt.target.getId());
-
         const position = this.ogma.view.graphToScreenCoordinates({x: evt.x, y: evt.y});
-
-        // showContextMenu(evt.target, position.x, position.y);
-
         const app = document.getElementById('account-info');
-        const p = document.createElement('p');
-        p.textContent = evt.target.getId();
-        app?.appendChild(p);
+        // const p = document.createElement('p');
+        this.p.textContent = evt.target.getId();
+        app?.appendChild(this.p);
 
         const account = await this.service.getAccount(evt.target.getId());
+        // const p2 = document.createElement('p');
+        this.p2.textContent = account.sheba;
+        app?.appendChild(this.p2);
 
-        const p2 = document.createElement('p');
-        p2.textContent = account.sheba;
-        app?.appendChild(p2);
 
-        const p3 = document.createElement('p');
-        p3.textContent = account.ownerName;
-        app?.appendChild(p3);
+        this.p3.textContent = account.ownerName + " " + account.ownerFamilyName;
+        app?.appendChild(this.p3);
+
+        this.p4 = document.createElement('p');
+        this.p4.textContent = "-----------";
+        // app?.appendChild(this.p4);
+
       } else if (evt.button === 'right' && evt.target && evt.target.isNode) {
-        console.log('right clicked');
         const selected = this.ogma.getSelectedNodes();
 
         let group = false;
@@ -236,8 +241,21 @@ export class AppComponent implements OnInit {
       this.counter = 0;
     }
 
-    this.item1.onclick = async function (evt) {
-      this.ogma.removeNodes(this.ogma.getSelectedNodes());
+    this.item1.onclick = async function () {
+      const node = this.ogma.getSelectedNodes();
+      this.ogma.removeNodes(node);
+      let b = 0;
+      // console.log(node.getId()[0]);
+      for (const a of this.nodes) {
+        if (a.id === node.getId()[0]) {
+          console.log(this.nodes.length);
+          console.log("b is:"+b);
+          this.nodes.splice(b, 1);
+          console.log(this.nodes.length);
+          b += 1;
+        }
+      }
+      // this.nodes.splice(b);
       this.item1.style.height = '0px';
       this.item1.style.width = '0px';
       this.item1.style.position = 'absolute';
@@ -268,8 +286,11 @@ export class AppComponent implements OnInit {
       this.item3.style.borderRadius = '50%';
       this.item3.className = 'menu-items';
       this.counter = 0;
-      console.log('ok');
+    }.bind(this);
 
+    this.item2.onclick = async function () {
+      const transactions = await this.service.getTransactionsOfAnAccount(this.ogma.getSelectedNodes().getId()[0]);
+      await this.createLink(transactions);
     }.bind(this);
 
     body?.appendChild(this.item1);
@@ -285,22 +306,50 @@ export class AppComponent implements OnInit {
     }
 
     const accountResult = await this.service.getAccount(id);
-    console.log(accountResult.accountId);
 
     if (Object.values(accountResult)[0] === null) {
       return;
     }
 
     const node = this.getNode(id);
+    this.ogma.addNode(node);
 
+    console.log(this.nodes.length);
+    const transactions = await this.service.getTransactionsOfAnAccount(id);
+    for (const a of this.nodes) {
+      for (const b of transactions) {
+        if (b.sourceAccount === id && b.destinationAccount === a.id) {
+          const link = this.getLink(b.transactionId, id, a.id);
+          this.links.push(link);
+          this.ogma.addEdge(link);
+        } else if (b.destinationAccount === id && b.sourceAccount === a.id) {
+          const link = this.getLink(b.transactionId, a.id, id);
+          this.links.push(link);
+          this.ogma.addEdge(link);
+        }
+      }
+    }
     this.nodes.push(node);
 
-    this.ogma.addNodes(this.nodes);
+    this.ogma.layouts.force({
+      charge: 50,
+      gravity: 0.01
+    });
   }
 
   private getNode(id: string): any {
-    const randomX = Math.random() * this.width - this.width / 2;
-    const randomY = Math.random() * this.height - this.height / 2;
+    let randomX = 0;
+    while (randomX > 400 || randomX < 100) {
+      randomX = Math.random() * this.width - this.width / 2;
+    }
+    // console.log("x is:" + randomX);
+    let randomY = Math.random() * this.height - this.height / 2;
+
+    while (randomY > 250 || randomY < 50) {
+      randomY = Math.random() * this.height - this.height / 2;
+    }
+    // console.log("y is:" + randomY);
+
 
     const node = {
       id,
@@ -310,44 +359,52 @@ export class AppComponent implements OnInit {
     return node;
   }
 
-  private async createLink(id: string) {
-
-    const transactionsResult = this.service.getTransactionsOfAnAccount(id);
-
-    if (transactionsResult == null) {
-      return;
-    }
-
-    const size = await transactionsResult.then(r => r.length);
-
-    for (let i = 0; i < size; i++) {
-
-      const transaction = transactionsResult.then(r => r.pop());
-
-      for (const i of this.links) {
-        if (i.id === transaction.then(r => r.transactionID)) {
-          return;
-        }
+  private async createLink(transactions: Transaction[]) {
+    for (const transaction of transactions) {
+      if (await this.service.getAccount(transaction.destinationAccount) == undefined || await this.service.getAccount(transaction.sourceAccount) == undefined) {
+        continue;
       }
-
-      this.createNode(await transaction.then(r => r.destiantionAccount));
-
-      const link = this.getLink(id, transaction);
-
+      await this.createNode(transaction.destinationAccount);
+      await this.createNode(transaction.sourceAccount);
+      if (this.checkLink(transaction.transactionId)) {
+        continue
+      }
+      const link = this.getLink(transaction.transactionId, transaction.sourceAccount, transaction.destinationAccount);
+      console.log(link);
       this.links.push(link);
-
-      this.ogma.addEdges(link);
+      this.ogma.addEdge(link);
     }
+    console.log("okokok");
   }
 
-  private getLink(id: string, transaction: Promise<Transaction>): any {
+  private checkLink(id: string): boolean {
+    for (const link of this.links) {
+      if (id === link.id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private getLink(id: string, source: string, destination: string): any {
     const link = {
-      id: transaction.then(r => r.transactionID),
-      source: id,
-      target: transaction.then(r => r.destiantionAccount),
-      data: {name: 'parent', color: 'red'}
+      id: id,
+      source: source,
+      target: destination,
+      // data: {name: 'parent', color: 'red'},
+      attributes: {
+        shape: 'arrow'
+      }
     };
     return link;
   }
 
+  clear($event: MouseEvent) {
+    const app = document.getElementById('account-info');
+    app.removeChild(this.p);
+    app.removeChild(this.p2);
+    app.removeChild(this.p3);
+    app.removeChild(this.p4);
+
+  }
 }

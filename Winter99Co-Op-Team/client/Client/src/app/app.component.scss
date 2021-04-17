@@ -1,10 +1,16 @@
-.main-div{
+body {
+  background: #1b1a1a;
+}
+
+.main-div {
+  color: red;
   display: flex;
   alignment: right;
 }
 
-.form-div{
+.form-div {
   width: 200px;
   height: 300px;
-  color: red;
+  color: orange;
 }
+

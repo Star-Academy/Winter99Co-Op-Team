@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Winter99Co_Op_Team.elasticsearch.SearchConnection.Search;
 
 namespace Winter99Co_Op_Team.Controllers
@@ -14,13 +16,15 @@ namespace Winter99Co_Op_Team.Controllers
             _transactionSearcher = transactionSearcher;
         }
 
-        [HttpPost, HttpGet]
-        public IActionResult GetTransactionsOfAccount([FromQuery, FromBody] string accountId)
+        [HttpPost]
+        public IActionResult GetTransactionsOfAccount([FromBody] JObject accountId)
         {
-            if (!IsInputValid(accountId))
-                return Ok("Input Format is incorrect");
+            accountId.TryGetValue("accountId", out var value);
+            var stringAccountId = value?.ToString();
+            // if (!IsInputValid(stringAccountId))
+            //     return Ok("Input Format is incorrect");
 
-            var transactions = _transactionSearcher.GetAllTransactions(accountId);
+            var transactions = _transactionSearcher.GetAllTransactions(stringAccountId);
             return Ok(transactions);
         }
 
