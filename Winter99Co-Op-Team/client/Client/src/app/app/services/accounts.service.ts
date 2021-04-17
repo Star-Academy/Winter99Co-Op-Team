@@ -10,10 +10,7 @@ export class AccountsService {
   }
 
   public async getAccount(id: string): Promise<Account> {
-    console.log(id);
-    // let id2 = "\"" + id + "\"";
-    const response = this.http.post<Account>('https://localhost:5001/account/getaccount', {accountId : id}).toPromise();
-    console.log(response);
+    const response = await this.http.post<Account>('https://localhost:5001/account/getaccount', {accountId : id}).toPromise();
     return response;
   }
 

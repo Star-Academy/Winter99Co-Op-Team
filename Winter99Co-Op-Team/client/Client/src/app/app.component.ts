@@ -19,11 +19,11 @@ export class AppComponent implements OnInit {
   private links = [];
   private width: number;
   private height: number;
-  private counter: number;
-  private item1: HTMLElement;
-  private item2: HTMLElement;
-  private item3: HTMLElement;
-  private counter1: number = 0;
+  private counter: number = 0;
+  private item1: HTMLDivElement;
+  private item2: HTMLDivElement;
+  private item3: HTMLDivElement;
+  private script: HTMLScriptElement;
 
 
   constructor(private service: AccountsService) {
@@ -45,6 +45,49 @@ export class AppComponent implements OnInit {
     this.item1 = document.createElement('div');
     this.item2 = document.createElement('div');
     this.item3 = document.createElement('div');
+    this.script = document.createElement('script');
+    this.script.src = 'https://kit.fontawesome.com/c7a9dbcce9.js';
+    this.script.crossOrigin = 'anonymous';
+
+
+    const a1 = document.createElement('a');
+    const icon1 = document.createElement('i');
+
+    const center1 = document.createElement('div');
+    center1.style.textAlign = 'center';
+    icon1.className = 'fa fa-trash-o';
+    icon1.style.color = 'white';
+    icon1.style.paddingTop = '15px';
+    a1.appendChild(icon1);
+    a1.href = '#';
+    center1.appendChild(a1);
+    this.item1.appendChild(center1);
+
+
+    const a2 = document.createElement('a');
+    const a3 = document.createElement('a');
+    const icon2 = document.createElement('i');
+    const icon3 = document.createElement('i');
+
+    const center2 = document.createElement('div');
+    center2.style.textAlign = 'center';
+    icon2.className = 'fa fa-expand';
+    a2.appendChild(icon2);
+    center2.appendChild(a2);
+    icon2.style.paddingTop = '15px';
+    icon2.style.color = 'white';
+    this.item2.appendChild(center2);
+
+
+    const center3 = document.createElement('div');
+    center3.style.textAlign = 'center';
+    icon3.className = 'fa fa-comment';
+    icon3.style.color = 'white';
+    a3.appendChild(icon3);
+    icon3.style.paddingTop = '15px';
+    center3.appendChild(a3);
+    this.item3.appendChild(center3);
+
 
   }
 
@@ -73,7 +116,7 @@ export class AppComponent implements OnInit {
   private addClickListener() {
     let currentNode;
 
-    this.ogma.events.onClick(function (evt) {
+    this.ogma.events.onClick(async function (evt) {
 
       if (evt.target === null) {
         console.log('clicked on background at coordinates', evt.x, evt.y);
@@ -89,15 +132,15 @@ export class AppComponent implements OnInit {
         p.textContent = evt.target.getId();
         app?.appendChild(p);
 
-        const account = this.service.getAccount(evt.target.getId());
+        const account = await this.service.getAccount(evt.target.getId());
 
         const p2 = document.createElement('p');
-        p2.textContent = account.then(r => r.Sheba);
+        p2.textContent = account.sheba;
         app?.appendChild(p2);
 
         const p3 = document.createElement('p');
-        p3.textContent = account.then(r => r.OwnerName);
-        app?.appendChild(p);
+        p3.textContent = account.ownerName;
+        app?.appendChild(p3);
       } else if (evt.button === 'right' && evt.target && evt.target.isNode) {
         console.log('right clicked');
         const selected = this.ogma.getSelectedNodes();
@@ -126,40 +169,39 @@ export class AppComponent implements OnInit {
 
   public showMenu(x, y, group: boolean) {
     const body = document.getElementById('body');
-    // const item1 = document.createElement('div');
-    // const item2 = document.createElement('div');
-    // const item3 = document.createElement('div');
+
+    body?.appendChild(this.script);
+
     if (this.counter === 0) {
-      this.item1.style.height = '30px';
-      this.item1.style.width = '30px';
+      this.item1.style.height = '50px';
+      this.item1.style.width = '50px';
       this.item1.style.position = 'absolute';
       this.item1.style.margin = 'auto';
-      this.item1.style.top = y - 50 + 'px';
-      this.item1.style.left = x - 50 + 'px';
-      this.item1.style.background = 'red';
+      this.item1.style.top = y - 60 + 'px';
+      this.item1.style.left = x - 60 + 'px';
+      this.item1.style.background = '#1b1a1a';
       this.item1.style.borderRadius = '50%';
       this.item1.className = 'menu-items';
 
-      this.item2.style.height = '30px';
-      this.item2.style.width = '30px';
+      this.item2.style.height = '50px';
+      this.item2.style.width = '50px';
       this.item2.style.position = 'absolute';
       this.item2.style.margin = 'auto';
-      this.item2.style.top = y - 65 + 'px';
+      this.item2.style.top = y - 75 + 'px';
       this.item2.style.left = x + 'px';
-      this.item2.style.background = 'red';
+      this.item2.style.background = '#1b1a1a';
       this.item2.style.borderRadius = '50%';
       this.item2.className = 'menu-items';
 
-      this.item3.style.height = '30px';
-      this.item3.style.width = '30px';
+      this.item3.style.height = '50px';
+      this.item3.style.width = '50px';
       this.item3.style.position = 'absolute';
       this.item3.style.margin = 'auto';
-      this.item3.style.top = y - 50 + 'px';
-      this.item3.style.left = x + 50 + 'px';
-      this.item3.style.background = 'red';
+      this.item3.style.top = y - 60 + 'px';
+      this.item3.style.left = x + 60 + 'px';
+      this.item3.style.background = '#1b1a1a';
       this.item3.style.borderRadius = '50%';
       this.item3.className = 'menu-items';
-      console.log(this.counter);
       this.counter = 1;
     } else {
       this.item1.style.height = '0px';
@@ -191,113 +233,63 @@ export class AppComponent implements OnInit {
       this.item3.style.background = 'red';
       this.item3.style.borderRadius = '50%';
       this.item3.className = 'menu-items';
-      console.log(this.counter);
       this.counter = 0;
     }
+
+    this.item1.onclick = async function (evt) {
+      this.ogma.removeNodes(this.ogma.getSelectedNodes());
+      this.item1.style.height = '0px';
+      this.item1.style.width = '0px';
+      this.item1.style.position = 'absolute';
+      this.item1.style.margin = 'auto';
+      this.item1.style.top = y - 50 + 'px';
+      this.item1.style.left = x - 50 + 'px';
+      this.item1.style.background = 'red';
+      this.item1.style.borderRadius = '50%';
+      this.item1.className = 'menu-items';
+
+      this.item2.style.height = '0px';
+      this.item2.style.width = '0px';
+      this.item2.style.position = 'absolute';
+      this.item2.style.margin = 'auto';
+      this.item2.style.top = y - 65 + 'px';
+      this.item2.style.left = x + 'px';
+      this.item2.style.background = 'red';
+      this.item2.style.borderRadius = '50%';
+      this.item2.className = 'menu-items';
+
+      this.item3.style.height = '0px';
+      this.item3.style.width = '0px';
+      this.item3.style.position = 'absolute';
+      this.item3.style.margin = 'auto';
+      this.item3.style.top = y - 50 + 'px';
+      this.item3.style.left = x + 50 + 'px';
+      this.item3.style.background = 'red';
+      this.item3.style.borderRadius = '50%';
+      this.item3.className = 'menu-items';
+      this.counter = 0;
+      console.log('ok');
+
+    }.bind(this);
 
     body?.appendChild(this.item1);
     body?.appendChild(this.item2);
     body?.appendChild(this.item3);
-
-    //
-    // const item1 = document.createElement('div');
-    // const item2 = document.createElement('div');
-    // const item3 = document.createElement('div');
-    //
-    // const a1 = document.createElement('a');
-    // const a2 = document.createElement('a');
-    // const a3 = document.createElement('a');
-    //
-    // const icon1 = document.createElement('i');
-    // const icon2 = document.createElement('i');
-    // const icon3 = document.createElement('i');
-    //
-    // item1.className = 'item1';
-    // item1.id = 'item1';
-    // const center1 = document.createElement('div');
-    // center1.style.textAlign = 'center';
-    // icon1.className = 'fa fa-trash-o';
-    // a1.appendChild(icon1);
-    // center1.appendChild(a1);
-    // item1.appendChild(center1);
-    //
-    // item2.className = 'item2';
-    // item2.id = 'item2';
-    // const center2 = document.createElement('div');
-    // center2.style.textAlign = 'center';
-    // icon2.className = 'fa fa-expand';
-    // a2.appendChild(icon1);
-    // center2.appendChild(a2);
-    // item2.appendChild(center2);
-    //
-    // item3.className = 'item3';
-    // item3.id = 'item3';
-    // const center3 = document.createElement('div');
-    // center3.style.textAlign = 'center';
-    // icon3.className = 'fa fa-trash-o';
-    // a3.appendChild(icon3);
-    // center3.appendChild(a3);
-    // item3.appendChild(center3);
-    //
-    // mainDiv.appendChild(item1);
-    // mainDiv.appendChild(item2);
-    // mainDiv.appendChild(item3);
-    //
-    //
-    // // ToDo
-    // // style of main-items > div
-    //
-    //
-    // a1.style.color = 'white';
-    // a2.style.color = 'white';
-    // a3.style.color = 'white';
-    //
-    // item2.style.bottom = '80px';
-    // item3.style.bottom = '160px';
-    //
-    // body?.appendChild(mainDiv);
-    //
-    // // <div class="menu-items">
-    // // <div class="item1" id="item1">
-    // // <div style="text-align: center;">
-    // // <a href="#">
-    // // <i class="fa fa-trash-o"></i>
-    // //   </a>
-    // //   </div>
-    // //   </div>
-    // //   <div class="item2" id="item2">
-    // // <div style="text-align: center;">
-    // // <a href="#">
-    // // <i class="fa fa-expand"></i>
-    // //   </a>
-    // //   </div>
-    // //   </div>
-    // //   <div class="item3" id="item3">
-    // // <div style="text-align: center;">
-    // // <a href="#">
-    // // <i class="fa fa-check"></i>
-    // //   </a>
-    // //   </div>
-    // //   </div>
-    // //   </div>
   }
 
-  private createNode(id: string) {
+  private async createNode(id: string) {
     for (const a of this.nodes) {
       if (a.id === id) {
         return;
       }
     }
 
-    const accountResult = this.service.getAccount(id) as unknown as Account;
-    console.log(accountResult);
-    console.log(this.counter1);
-    this.counter1 += 1;
+    const accountResult = await this.service.getAccount(id);
+    console.log(accountResult.accountId);
 
     if (Object.values(accountResult)[0] === null) {
       return;
     }
-
 
     const node = this.getNode(id);
 
